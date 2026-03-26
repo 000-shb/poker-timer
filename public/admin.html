@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>盲注级别管理</title>
+  <link href="./taiwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./all.min.css">
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans">
+  <div class="container mx-auto px-4 py-8">
+    <header class="bg-indigo-600 text-white rounded-lg shadow-md p-4 mb-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold flex items-center">
+          <i class="fas fa-cogs mr-2"></i>盲注级别管理后台
+        </h1>
+        <a href="/display.html" target="_blank"
+          class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100 transition flex items-center">
+          <i class="fas fa-eye mr-2"></i>查看前台
+        </a>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 计时器控制和标题设置 -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- 标题设置 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-bold text-indigo-600 mb-4 border-b pb-2">标题设置</h2>
+
+          <form id="title-form" class="space-y-4">
+            <div>
+              <label class="block text-gray-700 mb-1" for="tournament-title">锦标赛标题</label>
+              <input type="text" id="tournament-title" class="w-full px-3 py-2 border border-gray-300 rounded"
+                placeholder="输入锦标赛名称" value="">
+            </div>
+            <button type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition flex items-center">
+              <i class="fas fa-save mr-2"></i>保存标题
+            </button>
+          </form>
+        </div>
+
+        <!-- 计时器控制 -->
+        <div class="lg:col-span-1 bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-bold text-indigo-600 mb-4 border-b pb-2">计时器控制</h2>
+
+          <div class="mb-6">
+            <p class="text-gray-600 mb-2">当前级别: <span id="current-level-display" class="font-bold">1</span></p>
+            <p class="text-gray-600 mb-2">剩余时间: <span id="time-remaining-display" class="font-bold">15:00</span></p>
+            <p class="text-gray-600">状态: <span id="timer-status" class="font-bold">未开始</span></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <button id="start-timer"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition flex items-center justify-center">
+              <i class="fas fa-play mr-2"></i>开始
+            </button>
+            <button id="stop-timer"
+              class="bg-red-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition flex items-center justify-center">
+              <i class="fas fa-pause mr-2"></i>暂停
+            </button>
+            <button id="reset-timer"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center justify-center">
+              <i class="fas fa-sync mr-2"></i>重置
+            </button>
+            <button id="next-level-btn"
+              class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition flex items-center justify-center">
+              <i class="fas fa-arrow-right mr-2"></i>下一级
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 级别管理 -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- 添加新级别 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-bold text-indigo-600 mb-4 border-b pb-2">添加新级别</h2>
+
+          <form id="add-level-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-gray-700 mb-1" for="small-blind">小盲注</label>
+              <input type="number" id="small-blind" class="w-full px-3 py-2 border border-gray-300 rounded" min="10"
+                step="10" value="100">
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1" for="big-blind">大盲注</label>
+              <input type="number" id="big-blind" class="w-full px-3 py-2 border border-gray-300 rounded" min="10"
+                step="10" value="200">
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1" for="ante">前注</label>
+              <input type="number" id="ante" class="w-full px-3 py-2 border border-gray-300 rounded" min="0" step="10"
+                value="100">
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1" for="duration">持续时间(分钟)</label>
+              <input type="number" id="duration" class="w-full px-3 py-2 border border-gray-300 rounded" min="1"
+                step="1" value="10">
+            </div>
+            <div class="md:col-span-4">
+              <button type="submit"
+                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition flex items-center">
+                <i class="fas fa-plus mr-2"></i>添加级别
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 级别列表 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-bold text-indigo-600 mb-4 border-b pb-2">级别列表</h2>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="bg-gray-50">
+                  <th class="px-4 py-2 text-left text-gray-700">级别</th>
+                  <th class="px-4 py-2 text-left text-gray-700">小盲注</th>
+                  <th class="px-4 py-2 text-left text-gray-700">大盲注</th>
+                  <th class="px-4 py-2 text-left text-gray-700">前注</th>
+                  <th class="px-4 py-2 text-left text-gray-700">持续时间(分钟)</th>
+                </tr>
+              </thead>
+              <tbody id="levels-table-body">
+                <!-- 级别数据将通过JavaScript动态填充 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 编辑级别模态框 -->
+  <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <h3 class="text-xl font-bold text-indigo-600 mb-4">编辑级别</h3>
+
+      <form id="edit-level-form" class="space-y-4">
+        <input type="hidden" id="edit-level-id">
+
+        <div>
+          <label class="block text-gray-700 mb-1" for="edit-small-blind">小盲注</label>
+          <input type="number" id="edit-small-blind" class="w-full px-3 py-2 border border-gray-300 rounded" min="10"
+            step="10">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 mb-1" for="edit-big-blind">大盲注</label>
+          <input type="number" id="edit-big-blind" class="w-full px-3 py-2 border border-gray-300 rounded" min="10"
+            step="10">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 mb-1" for="edit-ante">前注</label>
+          <input type="number" id="edit-ante" class="w-full px-3 py-2 border border-gray-300 rounded" min="0" step="10">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 mb-1" for="edit-duration">持续时间(分钟)</label>
+          <input type="number" id="edit-duration" class="w-full px-3 py-2 border border-gray-300 rounded" min="1"
+            step="1">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // 连接WebSocket服务器
+    const ws = new WebSocket(`ws://${window.location.host}`)
+    let currentEditId = null
+
+    // 格式化时间（秒 -> mm:ss）
+    function formatTime (seconds) {
+      const mins = Math.floor(seconds / 60)
+      const secs = seconds % 60
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    }
+
+    // 更新级别表格
+    function updateLevelsTable (levels) {
+      const tableBody = document.getElementById('levels-table-body')
+      tableBody.innerHTML = ''
+
+      levels.forEach(level => {
+        const row = document.createElement('tr')
+        row.className = 'border-b hover:bg-gray-50'
+
+        row.innerHTML = `
+                    <td class="px-4 py-3">${level.id}</td>
+                    <td class="px-4 py-3">${level.small}</td>
+                    <td class="px-4 py-3">${level.big}</td>
+                    <td class="px-4 py-3">${level.ante}</td>
+                    <td class="px-4 py-3">${level.duration}</td>
+                    <td class="px-4 py-3">
+                        <button class="edit-btn text-indigo-600 hover:text-indigo-800 mr-3" data-id="${level.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-btn text-red-600 hover:text-red-800" data-id="${level.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `
+
+        tableBody.appendChild(row)
+      })
+
+      // 添加编辑按钮事件
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(parseInt(btn.dataset.id)))
+      })
+
+      // 添加删除按钮事件
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteLevel(parseInt(btn.dataset.id)))
+      })
+    }
+
+
+
+    // 打开编辑模态框
+    function openEditModal (levelId) {
+      const levels = JSON.parse(document.getElementById('levels-table-body').dataset.levels)
+      const level = levels.find(l => l.id === levelId)
+
+      if (level) {
+        currentEditId = levelId
+        document.getElementById('edit-level-id').value = levelId
+        document.getElementById('edit-small-blind').value = level.small
+        document.getElementById('edit-big-blind').value = level.big
+        document.getElementById('edit-ante').value = level.ante
+        document.getElementById('edit-duration').value = level.duration
+
+        document.getElementById('edit-modal').classList.remove('hidden')
+      }
+    }
+
+    // 关闭编辑模态框
+    function closeEditModal () {
+      document.getElementById('edit-modal').classList.add('hidden')
+      currentEditId = null
+    }
+
+    // 删除级别
+    function deleteLevel (levelId) {
+      if (confirm(`确定要删除级别 ${levelId} 吗？`)) {
+        ws.send(JSON.stringify({
+          type: 'deleteLevel',
+          data: { id: levelId }
+        }))
+      }
+    }
+
+    // 处理WebSocket消息
+    // ws.onmessage = (event) => {
+    //   const data = JSON.parse(event.data)
+
+    //   switch (data.type) {
+    //     case 'initialState':
+    //       document.getElementById('timer-status').value = data.isRunning == true ? '已开始' : '已暂停'
+    //     case 'stateUpdate':
+    //       // 保存级别数据供编辑使用
+    //       document.getElementById('levels-table-body').dataset.levels = JSON.stringify(data.data.levels)
+
+    //       // 更新UI
+    //       updateLevelsTable(data.data.levels)
+    //       updateTimerDisplay(data.data)
+    //       break
+    //     case 'error':
+    //       alert(data.message)
+    //       break
+    //   }
+    // }
+    // 处理WebSocket消息
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      switch (data.type) {
+        case 'initialState':
+          // 初始化状态时直接更新UI（原代码缺少这一步）
+          document.getElementById('levels-table-body').dataset.levels = JSON.stringify(data.data.levels)
+          updateLevelsTable(data.data.levels)
+          updateTimerDisplay(data.data)
+          // 正确设置初始状态文本
+          const statusElement = document.getElementById('timer-status')
+          if (data.data.isRunning) {
+            statusElement.textContent = '运行中'
+            statusElement.className = 'font-bold text-green-600'
+          } else {
+            statusElement.textContent = '未开始'
+            statusElement.className = 'font-bold text-gray-600'
+          }
+          break
+
+        case 'stateUpdate':
+          // 保存级别数据供编辑使用
+          document.getElementById('levels-table-body').dataset.levels = JSON.stringify(data.data.levels)
+          // 更新UI
+          // console.log(data)
+          updateLevelsTable(data.data.levels)
+          updateTimerDisplay(data.data)
+          break
+
+        case 'error':
+          alert(data.message)
+          break
+
+        // 新增：处理计时器状态变更的专门消息
+        case 'timerStateChange':
+          updateTimerDisplay(data.data)
+          break
+      }
+    }
+    // 更新计时器状态显示
+    function updateTimerDisplay (state) {
+      document.getElementById('current-level-display').textContent = state.currentLevel
+      document.getElementById('time-remaining-display').textContent = formatTime(state.timeRemaining)
+      const statusElement = document.getElementById('timer-status')
+      if (state.isRunning) {
+        statusElement.textContent = '运行中'
+        statusElement.className = 'font-bold text-green-600'
+      } else {
+        statusElement.textContent = '已暂停'
+        statusElement.className = 'font-bold text-amber-600'
+      }
+
+      // 更新标题输入框
+      // if (state.title) {
+      //   document.getElementById('tournament-title').value = state.title
+      // }
+    }
+    // 计时器控制按钮事件（增强版）
+    document.getElementById('start-timer').addEventListener('click', () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'startTimer' }))
+      } else {
+        // 连接未打开时的错误处理
+        alert('连接未就绪，请稍后重试')
+        // 尝试重新连接
+        ws = new WebSocket(`ws://${window.location.host}`)
+      }
+    })
+    // 计时器控制按钮事件
+    // document.getElementById('start-timer').addEventListener('click', () => {
+    //   ws.send(JSON.stringify({ type: 'startTimer' }))
+    // })
+
+    document.getElementById('stop-timer').addEventListener('click', () => {
+      ws.send(JSON.stringify({ type: 'stopTimer' }))
+    })
+
+    document.getElementById('reset-timer').addEventListener('click', () => {
+      ws.send(JSON.stringify({ type: 'resetTimer' }))
+    })
+
+    document.getElementById('next-level-btn').addEventListener('click', () => {
+      ws.send(JSON.stringify({ type: 'nextLevel' }))
+    })
+
+    // 标题设置表单提交
+    document.getElementById('title-form').addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      const title = document.getElementById('tournament-title').value.trim()
+      ws.send(JSON.stringify({
+        type: 'setTitle',
+        data: { title: title }
+      }))
+    })
+
+    // 添加级别表单提交
+    document.getElementById('add-level-form').addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      const newLevel = {
+        small: parseInt(document.getElementById('small-blind').value),
+        big: parseInt(document.getElementById('big-blind').value),
+        ante: parseInt(document.getElementById('ante').value),
+        duration: parseInt(document.getElementById('duration').value)
+      }
+
+      ws.send(JSON.stringify({
+        type: 'addLevel',
+        data: newLevel
+      }))
+
+      // 重置表单
+      e.target.reset()
+      document.getElementById('small-blind').value = 100
+      document.getElementById('big-blind').value = 200
+      document.getElementById('ante').value = 100
+      document.getElementById('duration').value = 10
+    })
+
+    // 编辑级别表单提交
+    document.getElementById('edit-level-form').addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      if (currentEditId) {
+        const updatedLevel = {
+          id: currentEditId,
+          small: parseInt(document.getElementById('edit-small-blind').value),
+          big: parseInt(document.getElementById('edit-big-blind').value),
+          ante: parseInt(document.getElementById('edit-ante').value),
+          duration: parseInt(document.getElementById('edit-duration').value),
+        }
+
+        ws.send(JSON.stringify({
+          type: 'updateLevel',
+          data: updatedLevel
+        }))
+
+        closeEditModal()
+      }
+    })
+
+    // 关闭模态框按钮
+    document.getElementById('close-modal').addEventListener('click', closeEditModal)
+
+    // 点击模态框外部关闭
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('edit-modal')) {
+        closeEditModal()
+      }
+    })
+
+    // 处理连接错误
+    ws.onerror = (error) => {
+      console.error('WebSocket错误:', error)
+      alert('连接服务器失败，请刷新页面重试')
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>盲注级别展示</title>
+  <link href="./taiwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./all.min.css">
+  <style>
+    .timer {
+      font-size: clamp(10rem, 15vw, 20rem);
+      font-weight: bold;
+      letter-spacing: -2px;
+      margin-top: 5rem;
+    }
+
+    .blind-value {
+      font-size: clamp(1.5rem, 5vw, 3rem);
+    }
+
+    body {
+      background-image: url('./background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      margin: 0;
+      padding-top: 10rem
+        /* 为顶部logo预留空间 */
+    }
+
+    /* 左上角logo样式 */
+    .top-logo {
+      position: fixed;
+      /* 固定在左上角 */
+      top: 0;
+      left: 0;
+      width: 600px;
+      /* 固定宽度 */
+      height: 400px;
+      /* 固定高度 */
+      padding: 10px;
+      z-index: 100;
+      /* 确保在其他内容上方 */
+    }
+
+    /* 右上角时间样式 */
+    .beijing-time {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 15px 25px;
+      /* 适当大内边距配合字体大小 */
+      border-radius: 8px;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+
+    .logo-image {
+      width: 100%;
+      height: 100%;
+      background-image: url('./tpg.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      /* 保持图片比例，完整显示 */
+      background-position: center;
+    }
+
+    .py-6 {
+      padding-top: 3rem;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+    }
+
+    .main-content {
+      min-width: 100vw;
+      width: 100%;
+      padding: 0 16px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 640px) {
+      .top-logo {
+        width: 120px;
+        height: 60px;
+      }
+
+      .beijing-time {
+        font-size: 4rem;
+        padding: 8px 12px;
+      }
+
+      body {
+        padding-top: 60px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .md\:text-3xl {
+        font-size: 8rem;
+        line-height: 2.25rem;
+      }
+
+      .md\:text-4xl {
+        font-size: 3rem;
+        line-height: 2.25rem;
+      }
+
+      .md\:text-base {
+        font-size: 5rem;
+        line-height: 5rem;
+      }
+
+      .md\:text-base1 {
+        font-size: 6rem;
+        line-height: 6rem;
+      }
+    }
+
+    .max-w-xl {
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen font-sans">
+  <!-- 左上角logo -->
+  <div class="top-logo">
+    <div class="logo-image"></div>
+  </div>
+  <!-- 右上角北京时间显示 -->
+  <div class="beijing-time">
+    <p id="beijing-clock" class="text-2xl md:text-4xl font-bold"></p>
+  </div>
+
+  <div class="container mx-auto py-6">
+    <main class="main-content flex flex-col gap-6">
+      <!-- 北京时间及当前盲注区域 -->
+      <div class="card p-6 md:p-8 flex flex-col items-center justify-center">
+        <p id="titleName" class="text-2xl md:text-3xl mb-4"></p>
+        <div id="timer" class="timer text-white mb-8 text-center">10:00</div>
+
+        <div class="grid grid-cols-3 gap-4 md:gap-8 w-full max-w-xl">
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">当前级别</p>
+            <p id="current-level" class="text-2xl md:text-base1 mb-1">100</p>
+          </div>
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">基础分</p>
+            <p id="small-blind" class="text-2xl md:text-base1 mb-1">100</p>
+          </div>
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">级别时间</p>
+            <p id="ante" class="text-2xl md:text-base1 mb-1">50min</p>
+          </div>
+        </div>
+        <div id="next-content" class="grid grid-cols-3 gap-4 md:gap-8 w-full max-w-xl">
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">下一级别</p>
+            <p id="next-level" class="text-2xl md:text-base1 mb-1">100</p>
+          </div>
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">基础分</p>
+            <p id="next-small-blind" class="text-2xl md:text-base1 mb-1">100</p>
+          </div>
+          <div class="bg-blue-900/30 p-4 rounded-lg text-center">
+            <p class="text-2xl md:text-base mb-1">级别时间</p>
+            <p id="next-ante" class="text-2xl md:text-base1 mb-1">50min</p>
+          </div>
+        </div>
+      </div>
+      <!-- <audio id="mp3" autoplay src="./Submarine.mp3" style="display: none;"></audio> -->
+    </main>
+  </div>
+
+  <script>
+    // 连接WebSocket服务器
+    const ws = new WebSocket(`ws://${window.location.host}`)
+
+    // 心跳机制
+    let heartBeatInterval
+    function startHeartBeat () {
+      // 每30秒发送一次心跳
+      heartBeatInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'heartbeat' }))
+        }
+      }, 30000)
+    }
+
+    // 连接成功时启动心跳
+    ws.onopen = () => {
+      console.log('WebSocket连接成功')
+      startHeartBeat()
+    }
+
+    // 关闭连接时清除心跳
+    ws.onclose = () => {
+      console.log('WebSocket连接已关闭')
+      clearInterval(heartBeatInterval)
+      // 尝试重连
+      setTimeout(() => {
+        window.location.reload()
+      }, 5000)
+    }
+
+    // 格式化时间（秒 -> mm:ss）
+    function formatTime (seconds) {
+      const mins = Math.floor(seconds / 60)
+      const secs = seconds % 60
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    }
+
+    // 实时更新北京时间（每秒刷新一次）
+    function updateBeijingTime () {
+      // 创建当前时间对象并转换为北京时间(UTC+8)
+      const now = new Date()
+      const beijingTime = new Date(now.getTime())
+
+      // 格式化日期
+      const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' }
+      const dateStr = beijingTime.toLocaleString('zh-CN', dateOptions)
+        .replace(/\//g, '-')
+        .replace(',', '')
+
+      // 格式化时间
+      const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
+      const timeStr = beijingTime.toLocaleString('zh-CN', timeOptions)
+
+      // 更新DOM
+      // document.getElementById('beijing-date').textContent = dateStr
+      document.getElementById('beijing-clock').textContent = `北京时间：${timeStr}`
+    }
+
+    // 初始化时间并启动定时器
+    updateBeijingTime()
+    setInterval(updateBeijingTime, 1000)
+    // 处理WebSocket消息
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      switch (data.type) {
+        case 'initialState':
+          updateUI(data.data)
+          break
+        case 'stateUpdate':
+          updateUI(data.data)
+          break
+        case 'setTitle':
+          updateTitle(data.data)
+          break
+        case 'updateStyle':
+          updateStyle()
+        case 'countdownWarning':
+          playMp()
+        case 'error':
+          alert(data.message)
+          break
+      }
+    }
+    // 播放声音
+    function playMp () {
+
+    }
+    function updateStyle () {
+      document.getElementById('next-content').style.display = 'none'
+    }
+    // 更新标题
+    function updateTitle (state) {
+      document.getElementById('titleName').innerText = state.data.title || '锦标赛'
+    }
+
+    // 更新UI显示
+    function updateUI (state) {
+      // // 更新计时器
+      document.getElementById('timer').textContent = formatTime(state.timeRemaining)
+
+      // // 更新当前级别信息
+      document.getElementById('current-level').textContent = state.currentLevel
+      document.getElementById('small-blind').textContent = `${state.currentLevelData?.small}/${state.currentLevelData?.big}` || 0
+      document.getElementById('ante').textContent = state.currentLevelData?.duration + 'min' || 0
+
+      // // 更新下一级别信息
+      document.getElementById('next-level').textContent = state.currentLevel + 1
+      const nextLevelData = state.levels.find(level => level.id === state.currentLevel + 1)
+      document.getElementById('next-small-blind').textContent = `${nextLevelData?.small}/${nextLevelData?.big}` || 0
+      document.getElementById('next-ante').textContent = nextLevelData?.duration + 'min' || 0
+
+      // 更新标题
+      document.getElementById('titleName').innerText = state.title || '锦标赛'
+      if (state.currentLevel !== 10) {
+        document.getElementById('next-content').style.display = ''
+      }
+    }
+
+    // 处理连接错误
+    ws.onerror = (error) => {
+      console.error('WebSocket错误:', error)
+      alert('连接服务器失败，请刷新页面重试')
+    }
+
+    // 处理连接关闭
+    ws.onclose = () => {
+      console.log('WebSocket连接已关闭')
+      setTimeout(() => {
+        window.location.reload()
+      }, 5000)
+    };
+  </script>
+</body>
+
+</html>
