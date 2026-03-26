@@ -162,7 +162,7 @@
           </div>
           <div class="bg-blue-900/30 p-4 rounded-lg text-center">
             <p class="text-2xl md:text-base mb-1">级别时间</p>
-            <p id="ante" class="text-2xl md:text-base1 mb-1">50min</p>
+            <p id="ante" class="text-2xl md:text-base1 mb-1">15min</p>
           </div>
         </div>
         <div id="next-content" class="grid grid-cols-3 gap-4 md:gap-8 w-full max-w-xl">
@@ -176,7 +176,7 @@
           </div>
           <div class="bg-blue-900/30 p-4 rounded-lg text-center">
             <p class="text-2xl md:text-base mb-1">级别时间</p>
-            <p id="next-ante" class="text-2xl md:text-base1 mb-1">50min</p>
+            <p id="next-ante" class="text-2xl md:text-base1 mb-1">15min</p>
           </div>
         </div>
       </div>
@@ -186,7 +186,7 @@
 
   <script>
     // 连接WebSocket服务器
-    const ws = new WebSocket(`ws://${window.location.host}`)
+    const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`)
 
     // 心跳机制
     let heartBeatInterval
